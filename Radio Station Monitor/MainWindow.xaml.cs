@@ -11,7 +11,7 @@ namespace Radio_Station_Monitor
         {
             InitializeComponent();
 
-            _NavigationFrame.Navigate(new ConnectPage());
+            _NavigationFrame.Navigate(new StatsPage());
         }
     }
 }
