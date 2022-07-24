@@ -13,6 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.IO;
+using System.Xml;
 
 namespace Radio_Station_Monitor
 {
@@ -23,28 +29,77 @@ namespace Radio_Station_Monitor
     {
 
         ServerStats StreamStats = new ServerStats();
-        
+        static readonly HttpClient client = new HttpClient();
+
         public StatsPage()
         {
             InitializeComponent();
+
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 30);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 10);
             dispatcherTimer.Start();
 
-            Status_Text.Text = StreamStats.status;
-            Status_Text.Foreground = StreamStats.foreground;
-            CurSong_Text.Text = StreamStats.curSong;
-
+            DispatcherTimer_Tick(null, null);
         }
 
         private async void DispatcherTimer_Tick(object sender, EventArgs e)
         {
-            StreamStats.updateStats();
+            // pull data from server.
 
-            Status_Text.Text = StreamStats.status;
-            Status_Text.Foreground = StreamStats.foreground;
-            CurSong_Text.Text = StreamStats.curSong;
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(Secrets.ServerURL);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                // parse XML
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.LoadXml(responseBody);
+
+                XmlNode root = xmlDoc.DocumentElement;
+
+                // display all the data.
+
+                Cur_Listeners.Text = root.SelectSingleNode("CURRENTLISTENERS").InnerText;
+                Peak_Listeners.Text = root.SelectSingleNode("PEAKLISTENERS").InnerText;
+                Genre.Text = root.SelectSingleNode("SERVERGENRE").InnerText;
+                StreamHits.Text = root.SelectSingleNode("STREAMHITS").InnerText;
+                CurSong_Text.Text = root.SelectSingleNode("SONGTITLE").InnerText;
+
+                switch (root.SelectSingleNode("STREAMSTATUS").InnerText)
+                {
+                    case "1":
+                        Status_Text.Text = "Online";
+                        Status_Text.Foreground = Brushes.Green;
+                        break;
+                    case "0":
+                        Status_Text.Text = "Offline";
+                        Status_Text.Foreground = Brushes.Red;
+                        break;
+                    default:
+                        Status_Text.Text = "Unknown";
+                        Status_Text.Foreground = Brushes.Black;
+                        break;
+                }
+
+                // convert seconds to minutes and seconds.
+                int seconds = Convert.ToInt32(root.SelectSingleNode("AVERAGETIME").InnerText);
+                int minutes = seconds / 60;
+                int seconds_left = seconds % 60;
+
+                Avg_ListenTime.Text = minutes.ToString() + "m " + seconds_left.ToString() + "s";
+
+            }
+            catch (HttpRequestException err)
+            {
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ", err.Message);
+            }
+
+            
         }
 
         private class ServerStats
@@ -52,14 +107,14 @@ namespace Radio_Station_Monitor
             public bool failed = false;
             public string status = "Connecting...";
             public Brush foreground = Brushes.Yellow;
-            public int curListeners = 0;
-            public int peakListeners = 0;
-            public int UniqueListeners = 0;
-            public int Bitrate = 0;
+            public string curListeners = "0";
+            public string peakListeners = "0";
+            public string UniqueListeners = "0";
+            public string Bitrate = "0";
             public string curSong = "Waiting for song...";
 
 
-            void setForeground()
+            void SetForeground()
             {
                 // Set Status
                 switch (status)
@@ -78,11 +133,6 @@ namespace Radio_Station_Monitor
                         break;
                 }
 
-            }
-
-            public async void updateStats()
-            {
-                return;
             }
         }
 

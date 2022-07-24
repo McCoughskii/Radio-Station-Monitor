@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Radio_Station_Monitor"
         mc:Ignorable="d"
-        Title="Radio Station Monitor" Height="310" Width="370"
-        WindowStyle="ToolWindow"
+        Title="Radio Station Monitor" Height="325" Width="450"
+        WindowStyle="SingleBorderWindow"
         WindowStartupLocation="CenterScreen">
     <Grid x:Name="ConnectGrid" Background="#FF121212" ShowGridLines="False">
         <DockPanel>

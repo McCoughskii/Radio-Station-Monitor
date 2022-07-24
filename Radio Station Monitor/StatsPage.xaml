@@ -26,26 +26,30 @@
 
         <TextBlock Grid.Column="1" Margin="10,73,10,319" Grid.Row="2" FontSize="18" Foreground="White" Height="26.07">
             <TextBlock Text="Current Listeners:" />
-            <TextBlock Text="0" />
+            <TextBlock x:Name="Cur_Listeners" Text="0" />
         </TextBlock>
 
         <TextBlock Grid.Column="1" Margin="10,99,10,293" Grid.Row="2" FontSize="18" Foreground="White" Height="26.07">
             <TextBlock Text="Peak Listeners:" />
-            <TextBlock Text="0" />
+            <TextBlock x:Name="Peak_Listeners" Text="0" />
         </TextBlock>
-
 
         <TextBlock Grid.Column="1" Margin="10,125,10,267" Grid.Row="2" FontSize="18" Foreground="White" Height="26.07">
-            <TextBlock Text="Unique Listeners:" />
-            <TextBlock Text="0" />
+            <TextBlock Text="Avg. Listen Time:" />
+            <TextBlock x:Name="Avg_ListenTime" Text="0" />
         </TextBlock>
 
-        <TextBlock Grid.Column="1" Margin="10,151,10,241" Grid.Row="2" FontSize="18" Foreground="White" Height="26.07">
-            <TextBlock Text="Bitrate:" />
-            <TextBlock Text="0" />
+        <TextBlock Margin="10,151,10,241" Grid.Row="2" FontSize="18" Foreground="White" Height="26.07">
+            <TextBlock Text="Genre:" />
+            <TextBlock x:Name="Genre" Text="0" />
         </TextBlock>
 
-        <TextBlock Grid.Column="1" Margin="10,177,10,215" Grid.Row="2" FontSize="18" Foreground="White" Height="26.07">
+        <TextBlock Margin="10,177,10,215" Grid.Row="2" FontSize="18" Foreground="White" Height="26.07">
+            <TextBlock Text="Stream Hits:" />
+            <TextBlock x:Name="StreamHits" Text="0" />
+        </TextBlock>
+
+        <TextBlock Margin="10,203,10,189" Grid.Row="2" FontSize="18" Foreground="White" Height="26.07">
             <TextBlock Text="Current Song:" />
             <TextBlock x:Name="CurSong_Text" Text="Song Name" />
         </TextBlock>
